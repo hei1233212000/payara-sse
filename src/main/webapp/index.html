@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Testing Sever Sent Event</title>
+</head>
+<body>
+    <button type="button" onclick="subscribe()">Subscribe</button>
+    <br/>
+    <div id="subscription" style="display: none">
+        <button type="button" onclick="unsubscribe()">Unsubscribe</button>
+        <br/>
+        <button type="button" onclick="increaseCounter()">Increase Counter</button>
+    </div>
+
+    <hr/>
+    <b>Counter: </b><span id="counter">0</span>
+</body>
+<script>
+    let eventSource;
+
+    function subscribe() {
+        eventSource = new EventSource(window.location.href + 'api/counter/register');
+        eventSource.onmessage = (event) => {
+            document.getElementById('counter').innerText = event.data;
+        };
+        // show the content after subscription
+        document.getElementById('subscription').style.display = 'block';
+        console.log('subscribed');
+    }
+
+    function unsubscribe() {
+        if (eventSource && eventSource.readyState === 1 /* OPEN */) {
+            eventSource.close();
+            // hide the subscription content
+            document.getElementById('subscription').style.display = 'none';
+            console.log('un-subscribed');
+        } else {
+            console.log('The connection is NOT opened, eventSource.readyState: ' + eventSource.readyState);
+        }
+    }
+
+    function increaseCounter() {
+        let http = new XMLHttpRequest();
+        http.open('POST', window.location.href + 'api/counter' /* url */, true /* async */);
+        http.send();
+    }
+</script>
+</html>
