@@ -4,18 +4,6 @@ import org.gradle.api.tasks.bundling.War
 import org.jetbrains.kotlin.allopen.gradle.AllOpenExtension
 import org.jetbrains.kotlin.noarg.gradle.NoArgExtension
 
-buildscript {
-    val kotlinVersion: String by extra { "1.2.50" }
-
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion")
-        classpath("org.jetbrains.kotlin:kotlin-noarg:$kotlinVersion")
-    }
-}
-
 plugins {
     kotlin("jvm") version "1.2.50"
     java
