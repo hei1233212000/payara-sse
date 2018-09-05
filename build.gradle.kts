@@ -4,11 +4,11 @@ import org.jetbrains.kotlin.allopen.gradle.AllOpenExtension
 import org.jetbrains.kotlin.noarg.gradle.NoArgExtension
 
 plugins {
-    kotlin("jvm") version "1.2.50"
+    kotlin("jvm") version "1.2.61"
     java
     war
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.2.50"
-    id("org.jetbrains.kotlin.plugin.noarg") version "1.2.50"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.2.61"
+    id("org.jetbrains.kotlin.plugin.noarg") version "1.2.61"
 }
 
 group = "poc"
@@ -19,7 +19,7 @@ repositories {
 }
 
 val jeeVersion = "8.0"
-val payaraMicroVersion = "5.182"
+val payaraMicroVersion = "5.183"
 
 dependencies {
     compile(kotlin("stdlib-jdk8"))
