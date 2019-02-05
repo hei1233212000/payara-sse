@@ -19,7 +19,7 @@ repositories {
 }
 
 val jeeVersion = "8.0"
-val payaraMicroVersion = "5.183"
+val payaraMicroVersion = "5.184"
 
 dependencies {
     compile(kotlin("stdlib-jdk8"))
