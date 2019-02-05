@@ -53,6 +53,10 @@ task<Exec>("runApp") {
     executable("java")
 
     args(listOf(
+            "--add-modules",
+            "java.xml.bind",
+            "--add-opens",
+            "java.base/jdk.internal.loader=ALL-UNNAMED",
             "-jar",
             payaraMicroJarPath,
             "--autoBindHttp",
