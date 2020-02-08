@@ -19,7 +19,7 @@ repositories {
 }
 
 val jeeVersion = "8.0"
-val payaraMicroVersion = "5.184"
+val payaraMicroVersion = "5.194"
 
 dependencies {
     compile(kotlin("stdlib-jdk8"))
@@ -53,10 +53,6 @@ task<Exec>("runApp") {
     executable("java")
 
     args(listOf(
-            "--add-modules",
-            "java.xml.bind",
-            "--add-opens",
-            "java.base/jdk.internal.loader=ALL-UNNAMED",
             "-jar",
             payaraMicroJarPath,
             "--autoBindHttp",
