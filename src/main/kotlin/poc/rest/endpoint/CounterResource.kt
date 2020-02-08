@@ -3,7 +3,6 @@ package poc.rest.endpoint
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Logger
-import java.util.stream.Collectors
 import javax.annotation.PostConstruct
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -24,14 +23,9 @@ class CounterResource {
     private lateinit var sse: Sse
 
     @Inject
-    @Transient
     private lateinit var logger: Logger
-
-    @Volatile
     private lateinit var sseBroadcaster: SseBroadcaster
-
     private lateinit var counter: AtomicInteger
-
     private lateinit var events: MutableSet<SseEventSink>
 
     @PostConstruct
@@ -40,6 +34,7 @@ class CounterResource {
         counter = AtomicInteger(0)
         sseBroadcaster = sse.newBroadcaster()
         sseBroadcaster.onClose { sseEventSink ->
+            events.remove(sseEventSink)
             logger.info("sseEventSink[$sseEventSink] is closed")
         }
         sseBroadcaster.onError { sseEventSink, throwable ->
@@ -63,9 +58,17 @@ class CounterResource {
         sseBroadcaster.broadcast(sse.newEvent(counter.incrementAndGet().toString()))
     }
 
-    @Path("event-status")
+    @Path("sse-event-sink-statuses")
     @GET
-    fun getEventStatus(): List<Boolean> {
-        return events.stream().map { it.isClosed }.collect(Collectors.toList())
+    fun getEventStatus(): List<SseEventSinkStatus> {
+        return events.map {
+            SseEventSinkStatus(
+                    alive = !it.isClosed
+            )
+        }
     }
 }
+
+data class SseEventSinkStatus(
+        val alive: Boolean
+)
