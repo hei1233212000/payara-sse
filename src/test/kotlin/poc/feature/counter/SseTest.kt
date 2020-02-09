@@ -54,17 +54,21 @@ class SseTest {
     @RunAsClient
     fun `Server Sent Event Client should able to close the connection`() {
         // given
-        val sseEventSource = createSseConnection()
-        verifyIfTheSseConnectionIsWorking()
+        val clientSideSseEventSource = createClientSideSseConnection()
+        increaseCounterFromServerSide()
+        latestSseDataReceivedInClientSide() `should be equal to` "1"
 
         // when
-        sseEventSource.close()
+        clientSideSseEventSource.close()
 
         // then
+        clientSideSseEventSource.isOpen `should be` false
+        increaseCounterFromServerSide()
+        latestSseDataReceivedInClientSide() `should be equal to` "1" /* the client side should not receive data anymore */
         verifySseLivenessInServerSide(isAlive = false)
     }
 
-    private fun createSseConnection(): SseEventSource {
+    private fun createClientSideSseConnection(): SseEventSource {
         val client = ClientBuilder.newClient()
         val target = client.target(sseUrl())
         val sseEventSource = SseEventSource.target(target).build()
@@ -73,7 +77,7 @@ class SseTest {
         }
         sseEventSource.open()
         sseEventSource.isOpen `should be` true
-        latestSseData() `should be equal to` "0"
+        latestSseDataReceivedInClientSide() `should be equal to` "0"
 
         verifySseLivenessInServerSide(isAlive = true)
         return sseEventSource
@@ -96,12 +100,7 @@ class SseTest {
         }
     }
 
-    private fun verifyIfTheSseConnectionIsWorking() {
-        increaseCounter()
-        latestSseData() `should be equal to` "1"
-    }
-
-    private fun increaseCounter() {
+    private fun increaseCounterFromServerSide() {
         RestAssured.given()
                 .accept(ContentType.JSON)
             .`when`()
@@ -110,7 +109,7 @@ class SseTest {
                 .statusCode(204)
     }
 
-    private fun latestSseData(): String = inboundSseEvents.last().readData()
+    private fun latestSseDataReceivedInClientSide(): String = inboundSseEvents.last().readData()
 
     private fun sseUrl() = "${url}api/counter/register"
 
