@@ -1,15 +1,7 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
-import org.jetbrains.kotlin.allopen.gradle.AllOpenExtension
-import org.jetbrains.kotlin.noarg.gradle.NoArgExtension
-
 plugins {
-    val kotlinVersion = "1.3.50"
     idea
-    kotlin("jvm") version kotlinVersion
+    java
     war
-    id("org.jetbrains.kotlin.plugin.allopen") version kotlinVersion
-    id("org.jetbrains.kotlin.plugin.noarg") version kotlinVersion
     id("io.spring.dependency-management") version "1.0.6.RELEASE"
 }
 
@@ -34,6 +26,7 @@ val shrinkwrapVersion = "3.1.3"
 val restAssuredVersion = "4.0.0"
 val jerseyVersion = "2.30"
 val gradleToolApiVersion = "5.5.1"
+val awaitilityVersion = "4.0.2"
 
 dependencyManagement {
     imports {
@@ -42,11 +35,9 @@ dependencyManagement {
 }
 
 dependencies {
-    compile(kotlin("stdlib-jdk8"))
     providedCompile("jakarta.platform:jakarta.jakartaee-api:$jakartaeeVersion")
     providedCompile("fish.payara.extras:payara-micro:$payaraMicroVersion")
 
-    testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("org.junit.vintage:junit-vintage-engine:$junitVersion")
     testImplementation("org.jboss.arquillian.junit:arquillian-junit-container")
     testImplementation("org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-impl-gradle:$shrinkwrapVersion") {
@@ -63,10 +54,7 @@ dependencies {
     testImplementation("org.glassfish.jersey.inject:jersey-hk2:$jerseyVersion")
     testImplementation("org.glassfish.jersey.media:jersey-media-sse:$jerseyVersion")
 
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+    testImplementation("org.awaitility:awaitility:$awaitilityVersion")
 }
 
 val payaraMicroJarDir = "$buildDir/payara-micro"
@@ -86,7 +74,7 @@ tasks.withType<Test> {
 }
 
 task<Copy>("copyPayaraMicro") {
-    from(configurations.providedCompile.files { it.name == "payara-micro" })
+    from(configurations.providedCompile.get().files { it.name == "payara-micro" })
     into(payaraMicroJarDir)
     rename { payaraMicroJarName }
 }
@@ -108,13 +96,3 @@ task<Exec>("runApp") {
             explodedWarDir
     ))
 }.dependsOn("copyPayaraMicro", "explodedWar")
-
-
-configure<AllOpenExtension> {
-    annotation("javax.ws.rs.Path")
-    annotation("javax.enterprise.context.ApplicationScoped")
-}
-
-configure<NoArgExtension> {
-    annotation("javax.enterprise.context.ApplicationScoped")
-}

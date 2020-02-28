@@ -10,3 +10,5 @@
 7. Go to the web page which is still subscribing the stream and click the "Increase Counter" button
 8. So, the counter in the page is still subscribing the stream will be updated; the counter in the page is NOT subscribing the stream will remain. It show that the "unsubscribe" is working and the stream connection should be closed by client side
 9. For double check, you could ge to http://localhost:8080/payara-sse/api/counter/sse-event-sink-statuses to check if there is any event stream is closed (true means closed)
+
+The issue is already tracked in https://github.com/payara/Payara/issues/2897#issuecomment-592210134
